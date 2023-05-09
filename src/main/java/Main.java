@@ -1,13 +1,38 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         BooleanSearchEngine engine = new BooleanSearchEngine(new File("pdfs"));
-        System.out.println(engine.search("бизнес"));
+        try (ServerSocket serverSocket = new ServerSocket(8989);) {
+            while (true) {
+                try (Socket socket = serverSocket.accept();
+                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                     PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 
-        // здесь создайте сервер, который отвечал бы на нужные запросы
-        // слушать он должен порт 8989
-        // отвечать на запросы /{word} -> возвращённое значение метода search(word) в JSON-формате
+                    System.out.println("New connection accepted");
+                    System.out.println("Подключен клиент " + socket.getPort());
+                    String request = in.readLine();
+
+                    try (PrintWriter writer = new PrintWriter("response.json")) {
+                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        String clientrequestJson = gson.toJson(engine.search(request));
+                        writer.println(clientrequestJson);
+                        out.println(clientrequestJson);
+
+                    }
+
+                }
+            }
+        }
     }
 }
