@@ -43,7 +43,6 @@ public class BooleanSearchEngine implements SearchEngine {
                     } else {
                         setList(new ArrayList<>());
                         list.add(pageEntry);
-                        Collections.sort(list);
                         wordsMap.put(kv.getKey(), list);
                     }
                 }
