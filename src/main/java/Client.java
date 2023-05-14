@@ -20,13 +20,14 @@ public class Client {
             System.out.println("Введите слово");
             String input = scanner.nextLine();
             writer.println(input);
+
             Gson gson = new Gson();
-            Type founderListType = new TypeToken<ArrayList<PageEntry>>() {}.getType();
+            Type founderListType = new TypeToken<ArrayList<PageEntry>>() {
+            }.getType();
 
             List<PageEntry> result = gson.fromJson(reader.readLine(), founderListType);
 
             System.out.println(result);
-
         }
     }
 }

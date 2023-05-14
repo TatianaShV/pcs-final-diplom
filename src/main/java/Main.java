@@ -24,7 +24,7 @@ public class Main {
                     String request = in.readLine();
 
                     try (PrintWriter writer = new PrintWriter("response.json")) {
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        Gson gson = new GsonBuilder().create();
                         String clientrequestJson = gson.toJson(engine.search(request));
                         writer.println(clientrequestJson);
                         out.println(clientrequestJson);

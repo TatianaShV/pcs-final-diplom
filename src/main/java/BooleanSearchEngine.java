@@ -9,8 +9,12 @@ import java.util.*;
 
 public class BooleanSearchEngine implements SearchEngine {
 
-    Map<String, List<PageEntry>> wordsMap = new HashMap<>();
-    List<PageEntry> list;
+    private final Map<String, List<PageEntry>> wordsMap = new HashMap<>();
+    private List<PageEntry> list;
+
+    public void setList(List<PageEntry> list) {
+        this.list = list;
+    }
 
     public BooleanSearchEngine(File pdfsDir) throws IOException {
         List<File> listPdf = List.of(pdfsDir.listFiles());
@@ -31,13 +35,15 @@ public class BooleanSearchEngine implements SearchEngine {
                 }
                 for (Map.Entry<String, Integer> kv : freqs.entrySet()) {
                     PageEntry pageEntry = new PageEntry(pdfName, i, kv.getValue());
-                    if (!wordsMap.containsKey(kv.getKey())) {
-                        list = new ArrayList<>();
+                    if (wordsMap.containsKey(kv.getKey())) {
+                        setList(wordsMap.get(kv.getKey()));
                         list.add(pageEntry);
+                        Collections.sort(list);
                         wordsMap.put(kv.getKey(), list);
                     } else {
-                        list = wordsMap.get(kv.getKey());
+                        setList(new ArrayList<>());
                         list.add(pageEntry);
+                        Collections.sort(list);
                         wordsMap.put(kv.getKey(), list);
                     }
                 }
@@ -47,10 +53,10 @@ public class BooleanSearchEngine implements SearchEngine {
 
     @Override
     public List<PageEntry> search(String word) {
+        word = word.toLowerCase();
         List<PageEntry> result = new ArrayList<>();
         if (wordsMap.containsKey(word)) {
             result = wordsMap.get(word);
-            Collections.sort(result);
             return result;
         }
         return result;
